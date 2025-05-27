@@ -1,41 +1,35 @@
 const formulario = document.getElementById("formCadCliente");
 let listaDeClientes = [];
 
-formulario.addEventListener("submit", manipularSubmissao);
+
+formulario.onsubmit=manipularSubmissao;
 
 
 if (localStorage.getItem("clientes")){
     listaDeClientes = JSON.parse(localStorage.getItem("clientes"));
 }
 
-function manipularSubmissao(evento) {
-  evento.preventDefault();
-  evento.stopPropagation();
+function manipularSubmissao(evento){
+    if (formulario.checkValidity()){
+        const cpf = document.getElementById("cpf").value;
+        const nome = document.getElementById("nome").value;
+        const telefone = document.getElementById("telefone").value;
+        const cidade = document.getElementById("cidade").value;
+        const uf = document.getElementById("uf").value;
+        const cep = document.getElementById("cep").value;
+        const cliente = {cpf,nome,telefone,cidade,uf,cep};
+        listaDeClientes.push(cliente);
+        localStorage.setItem("clientes", JSON.stringify(listaDeClientes));
+        formulario.reset();
+        mostrarTabelaClientes();
+    }
+    else{
+        formulario.classList.add('was-validated');
+    }
+    evento.preventDefault(); //cancelamento do evento
+    evento.stopPropagation(); //impedindo que outros observem esse evento
 
-  if (!formulario.checkValidity()) {
-    formulario.classList.add('was-validated'); // mostra erros
-    return;
-  }
-
-  // Pegando os valores
-  const cpf = document.getElementById("cpf").value.trim();
-  const nome = document.getElementById("nome").value.trim();
-  const telefone = document.getElementById("telefone").value.trim();
-  const cidade = document.getElementById("cidade").value.trim();
-  const uf = document.getElementById("uf").value;
-  const cep = document.getElementById("cep").value.trim();
-
-  // Criando cliente
-  const cliente = { cpf, nome, telefone, cidade, uf, cep };
-  listaDeClientes.push(cliente);
-
-  // Salvando e limpando
-  localStorage.setItem("clientes", JSON.stringify(listaDeClientes));
-  formulario.reset();
-  formulario.classList.remove('was-validated');
-  mostrarTabelaClientes();
 }
-
 function mostrarTabelaClientes(){
     const divTabela = document.getElementById("tabela");
     divTabela.innerHTML = "";

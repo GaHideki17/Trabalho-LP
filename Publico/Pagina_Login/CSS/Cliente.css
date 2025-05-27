@@ -1,4 +1,4 @@
-/* Fundo geral da página */
+
 body {
   background-color: #f1f4f9;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -9,13 +9,11 @@ body {
   padding: 2rem;
 }
 
-/* Container central */
 .container {
   width: 100%;
   max-width: 900px;
 }
 
-/* Cartão do formulário */
 .card-custom {
   background-color: #fff;
   border-radius: 1rem;
@@ -23,14 +21,14 @@ body {
   padding: 2rem;
 }
 
-/* Título principal */
+
 h1 {
   font-size: 2.5rem;
   color: #0d6efd;
   font-weight: bold;
 }
 
-/* Inputs */
+
 .form-control,
 .form-select {
   border-radius: 0.5rem;
@@ -43,7 +41,7 @@ h1 {
   box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }
 
-/* Botões */
+
 button.btn-primary {
   background-color: #0d6efd;
   border-color: #0d6efd;
@@ -67,7 +65,7 @@ a.btn-outline-secondary:hover {
   background-color: #e2e6ea;
 }
 
-/* Tabela */
+
 #tabela {
   margin-top: 2rem;
 }
