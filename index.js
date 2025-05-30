@@ -21,13 +21,14 @@ app.use(express.urlencoded({extended:true}));
 
 
 app.use(express.static("./Publico")); 
+app.use(verificarAutenticacao, express.static("./Privado"));
 
 
 app.post("/login",(requisicao, resposta) => {
   const { usuario, senha } = requisicao.body;
   if (usuario == "admin" && senha == "admin"){
     requisicao.session.autenticado = true;
-    resposta.redirect("/menu.html");
+    resposta.redirect("/Menu.html");
   }
   else{
     let conteudo = `
@@ -78,12 +79,12 @@ app.post("/login",(requisicao, resposta) => {
   }
 });
 
-app.use(verificarAutenticacao,express.static("./Privado")); 
+
 
 
 app.get('/logout',(requisicao,resposta)=>{
     requisicao.session.destroy(); 
-    resposta.redirect("./Publico/Pagina_Login/Login.html"); 
+    resposta.redirect("/Pagina_Login/Login.html"); 
 });
 
 app.listen(porta, host, () => {
