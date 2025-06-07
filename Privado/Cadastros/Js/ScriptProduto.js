@@ -92,5 +92,3 @@ function excluirProduto(nome) {
 
 // Ao carregar a página
 mostrarTabelaProdutos();
-
-//aaaa
