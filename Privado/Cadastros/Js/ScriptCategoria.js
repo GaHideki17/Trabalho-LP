@@ -31,36 +31,40 @@ function mostrarTabelaCategorias() {
     divTabela.innerHTML = "";
 
     if (listaCategorias.length === 0) {
-        divTabela.innerHTML = `<p class="alert alert-info text-center mt-4">Nenhuma categoria cadastrada.</p>`;
+        divTabela.innerHTML = "<p class='alert alert-info text-center mt-4'>Nenhuma categoria cadastrada.</p>";
         return;
     }
 
     const tabela = document.createElement("table");
-    tabela.className = "table table-striped mt-4";
+    tabela.className = "table table-striped table-hover mt-4";
 
-    tabela.innerHTML = `
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${listaCategorias.map(cat => `
-                <tr>
-                    <td>${cat.nome}</td>
-                    <td>${cat.descricao}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="excluirCategoria('${cat.nome}')">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join("")}
-        </tbody>
+    const cabecalho = document.createElement("thead");
+    cabecalho.innerHTML = `
+        <tr>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Ações</th>
+        </tr>
     `;
+    tabela.appendChild(cabecalho);
 
+    const corpo = document.createElement("tbody");
+
+    for (let i = 0; i < listaCategorias.length; i++) {
+        const linha = document.createElement("tr");
+        linha.innerHTML = `
+            <td>${listaCategorias[i].nome}</td>
+            <td>${listaCategorias[i].descricao}</td>
+            <td>
+                <button class="btn btn-danger btn-sm" onclick="excluirCategoria('${listaCategorias[i].nome}')">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
+        corpo.appendChild(linha);
+    }
+
+    tabela.appendChild(corpo);
     divTabela.appendChild(tabela);
 }
 
