@@ -1,15 +1,16 @@
+const urlBase = 'http://localhost:4000/entregadores';
+
 const formulario = document.getElementById("formCadEntregador");
 let listaDeEntregadores = [];
 
-// Carrega do localStorage se houver dados salvos
+
 if (localStorage.getItem("entregadores")) {
     listaDeEntregadores = JSON.parse(localStorage.getItem("entregadores"));
 }
 
-// Envio do formulário
+
 formulario.onsubmit = function(evento) {
-    evento.preventDefault();
-    evento.stopPropagation();
+
 
     if (formulario.checkValidity()) {
         const nome = document.getElementById("nome").value;
@@ -18,16 +19,15 @@ formulario.onsubmit = function(evento) {
         const rg = document.getElementById("rg").value;
 
         const entregador = { nome, dataNascimento, cpf, rg };
-        listaDeEntregadores.push(entregador);
 
-        localStorage.setItem("entregadores", JSON.stringify(listaDeEntregadores));
-
+        cadastrarEntregador(entregador);
         formulario.reset();
-        formulario.classList.remove("was-validated");
         mostrarTabelaEntregadores();
     } else {
         formulario.classList.add("was-validated");
     }
+    evento.preventDefault();
+    evento.stopPropagation();
 };
 
 // Exibir a tabela com os entregadores
@@ -43,7 +43,8 @@ function mostrarTabelaEntregadores() {
     const tabela = document.createElement("table");
     tabela.className = "table table-striped table-hover mt-4";
 
-    const thead = document.createElement("thead");
+    const cabecalho = document.createElement("thead");
+    const corpo = document.createElement("tbody");
     thead.innerHTML = `
         <tr>
             <th>Nome</th>
@@ -53,40 +54,92 @@ function mostrarTabelaEntregadores() {
             <th>Ações</th>
         </tr>
     `;
-
-    const tbody = document.createElement("tbody");
-
-    listaDeEntregadores.forEach(entregador => {
+    tabela.appendChild(cabecalho);
+    for (let i=0; i < listaDeEntregadores.length; i++){
         const linha = document.createElement("tr");
-
+        linha.id=listaDeEntregadores[i].id;        
         linha.innerHTML = `
-            <td>${entregador.nome}</td>
-            <td>${entregador.dataNascimento}</td>
-            <td>${entregador.cpf}</td>
-            <td>${entregador.rg}</td>
+            <td>${listaDeEntregadores[i].nome}</td>
+            <td>${listaDeEntregadores[i].dataNascimento}</td>
+            <td>${listaDeEntregadores[i].cpf}</td>
+            <td>${listaDeEntregadores[i].rg}</td>
             <td>
                 <button class="btn btn-danger btn-sm" onclick="excluirEntregador('${entregador.cpf}')">
                     <i class="bi bi-trash"></i>
                 </button>
             </td>
         `;
+            corpo.appendChild(linha);
+        }
+        tabela.appendChild(corpo);
+        divTabela.appendChild(tabela);
+    };
 
-        tbody.appendChild(linha);
-    });
-
-    tabela.appendChild(thead);
-    tabela.appendChild(tbody);
-    divTabela.appendChild(tabela);
-}
-
-// Função para excluir um entregador pelo CPF
-function excluirEntregador(cpf) {
-    if (confirm(`Deseja realmente excluir o entregador com CPF ${cpf}?`)) {
-        listaDeEntregadores = listaDeEntregadores.filter(e => e.cpf !== cpf);
-        localStorage.setItem("entregadores", JSON.stringify(listaDeEntregadores));
-        mostrarTabelaEntregadores();
+function excluirEntregador(id){
+    if(confirm("Deseja realmente excluir o cliente " + id + "?")){
+        fetch(urlBase + "/" + id,{
+            method:"DELETE"
+        }).then((resposta) => {
+            if (resposta.ok){
+                return resposta.json();
+            }
+        }).then((dados)=>{
+            alert("Cliente excluído com sucesso!");
+            listaDeEntregadores = listaDeEntregadores.filter((entregador) => { 
+                return entregador.id !== id;
+            });
+        
+            document.getElementById(id)?.remove(); //excluir a linha da tabela
+        }).catch((erro) => {
+            alert("Não foi possível excluir o cliente: " + erro);
+        });
     }
 }
 
-// Exibe a tabela ao carregar a página
-mostrarTabelaEntregadores();
+
+function obterDadosEntregador(){
+    //enviar uma requisição para a fonte servidora
+    fetch(urlBase, {
+        method:"GET"
+    })
+    .then((resposta)=>{
+        if (resposta.ok){
+            return resposta.json();
+        }
+    })
+    .then((entregadores)=>{
+        listaDeEntregadores=entregadores;
+        mostrarTabelaEntregadores();
+    })
+    .catch((erro)=>{
+        alert("Erro ao tentar recuperar Entregadores do servidor!");
+    });
+}
+
+
+function cadastrarEntregador(entregador){
+
+    fetch(urlBase, {
+       "method":"POST",
+       "headers": {
+          "Content-Type":"application/json",
+       },
+       "body": JSON.stringify(entregador)
+    })
+    .then((resposta)=>{
+        if(resposta.ok){
+            return resposta.json();
+        }
+    })
+    .then((dados) =>{
+        alert(`Entregador incluído com sucesso! ID:${dados.id}`);
+        listaDeEntregadores.push(entregador);
+        mostrarTabelaEntregadores();
+    })
+    .catch((erro)=>{
+        alert("Erro ao cadastrar o cliente:" + erro);
+    });
+
+}
+
+obterDadosClientes();

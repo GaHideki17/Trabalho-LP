@@ -1,3 +1,4 @@
+const urlBase = 'http://localhost:4000/fornecedores';
 const formulario = document.getElementById("formCadFornecedor");
 let listaDeFornecedores = [];
 
@@ -40,12 +41,13 @@ function mostrarTabelaFornecedores() {
         divTabela.innerHTML = `<p class="alert alert-info text-center mt-4">Nenhum fornecedor cadastrado.</p>`;
         return;
     }
+    else{
+        const tabela = document.createElement('table');
+        tabela.className="table table-striped table-hover";
 
-    const tabela = document.createElement("table");
-    tabela.className = "table table-bordered table-striped table-hover mt-4";
-
-    const thead = document.createElement("thead");
-    thead.innerHTML = `
+        const cabecalho = document.createElement('thead');
+        const corpo = document.createElement('tbody');
+        cabecalho.innerHTML=`
         <tr>
             <th>Nome</th>
             <th>CNPJ</th>
@@ -56,42 +58,96 @@ function mostrarTabelaFornecedores() {
             <th>Ações</th>
         </tr>
     `;
+        tabela.appendChild(cabecalho);
+        for (let i=0; i < listaDeFornecedores.length; i++){
+            const linha = document.createElement('tr');
+            linha.id=listaDeFornecedores[i].id;
+            linha.innerHTML = `
+                <td>${listaDeFornecedores[i].nome}</td>
+                <td>${listaDeFornecedores[i].cnpj}</td>
+                <td>${listaDeFornecedores[i].tempo}</td>
+                <td>${listaDeFornecedores[i].cep}</td>
+                <td>${listaDeFornecedores[i].uf}</td>
+                <td>${listaDeFornecedores[i].cidade}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" onclick="excluirFornecedor('${listaDeFornecedores[i].cnpj}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+            corpo.appendChild(linha);
+        }
+        tabela.appendChild(corpo);
+        divTabela.appendChild(tabela);
 
-    const tbody = document.createElement("tbody");
-
-    listaDeFornecedores.forEach(fornecedor => {
-        const linha = document.createElement("tr");
-
-        linha.innerHTML = `
-            <td>${fornecedor.nome}</td>
-            <td>${fornecedor.cnpj}</td>
-            <td>${fornecedor.tempo}</td>
-            <td>${fornecedor.cep}</td>
-            <td>${fornecedor.uf}</td>
-            <td>${fornecedor.cidade}</td>
-            <td>
-                <button class="btn btn-danger btn-sm" onclick="excluirFornecedor('${fornecedor.cnpj}')">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        `;
-
-        tbody.appendChild(linha);
-    });
-
-    tabela.appendChild(thead);
-    tabela.appendChild(tbody);
-    divTabela.appendChild(tabela);
-}
-
-// Excluir fornecedor por CNPJ
-function excluirFornecedor(cnpj) {
-    if (confirm(`Deseja realmente excluir o fornecedor com CNPJ ${cnpj}?`)) {
-        listaDeFornecedores = listaDeFornecedores.filter(f => f.cnpj !== cnpj);
-        localStorage.setItem("fornecedores", JSON.stringify(listaDeFornecedores));
-        mostrarTabelaFornecedores();
     }
 }
 
-// Mostrar tabela ao carregar a página
-mostrarTabelaFornecedores();
+function excluirFornecedor(id){
+    if(confirm("Deseja realmente excluir o Fornecedor " + id + "?")){
+        fetch(urlBase + "/" + id,{
+            method:"DELETE"
+        }).then((resposta) => {
+            if (resposta.ok){
+                return resposta.json();
+            }
+        }).then((dados)=>{
+            alert("Fornecedor excluído com sucesso!");
+            listaDeFornecedores = listaDeFornecedores.filter((entregador) => { 
+                return entregador.id !== id;
+            });
+        
+            document.getElementById(id)?.remove(); //excluir a linha da tabela
+        }).catch((erro) => {
+            alert("Não foi possível excluir o Fornecedor: " + erro);
+        });
+    }
+}
+
+
+function obterDadosFornecedores(){
+    //enviar uma requisição para a fonte servidora
+    fetch(urlBase, {
+        method:"GET"
+    })
+    .then((resposta)=>{
+        if (resposta.ok){
+            return resposta.json();
+        }
+    })
+    .then((fornecedores)=>{
+        listaDeFornecedores=fornecedores;
+        mostrarTabelaFornecedores();
+    })
+    .catch((erro)=>{
+        alert("Erro ao tentar recuperar Forncedores do servidor!");
+    });
+}
+
+
+function cadastrarFornecedor(fornecedor){
+
+    fetch(urlBase, {
+       "method":"POST",
+       "headers": {
+          "Content-Type":"application/json",
+       },
+       "body": JSON.stringify(fornecedor)
+    })
+    .then((resposta)=>{
+        if(resposta.ok){
+            return resposta.json();
+        }
+    })
+    .then((dados) =>{
+        alert(`Fornecedor incluído com sucesso! ID:${dados.id}`);
+        listaDeFornecedores.push(fornecedor);
+        mostrarTabelaFornecedores();
+    })
+    .catch((erro)=>{
+        alert("Erro ao cadastrar o Fornecedor:" + erro);
+    });
+
+}
+
+obterDadosFornecedores();
