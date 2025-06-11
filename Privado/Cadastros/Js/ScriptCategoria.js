@@ -16,28 +16,17 @@ formulario.onsubmit = function(evento) {
         const categoria = { nome, descricao };
         listaCategorias.push(categoria);
 
-         salvarCategorias();
+        localStorage.setItem("categorias", JSON.stringify(listaCategorias));
 
         formulario.reset();
         formulario.classList.remove("was-validated");
-        renderizarCategorias();
+        mostrarTabelaCategorias();
     } else {
         formulario.classList.add("was-validated");
     }
 };
 
-function carregarCategorias() {
-    const dados = localStorage.getItem("categorias");
-    if (dados) {
-        listaCategorias = JSON.parse(dados);
-    }
-}
-
-function salvarCategorias() {
-    localStorage.setItem("categorias", JSON.stringify(listaCategorias));
-}
-
-function renderizarCategorias() {
+function mostrarTabelaCategorias() {
     const divTabela = document.getElementById("tabela");
     divTabela.innerHTML = "";
 

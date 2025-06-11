@@ -19,7 +19,7 @@ function manipularSubmissao(evento){
         const cep = document.getElementById("cep").value;
         const cliente = {cpf,nome,telefone,cidade,uf,cep};
         listaDeClientes.push(cliente);
-        cadastrarCliente(cliente)
+        localStorage.setItem("clientes", JSON.stringify(listaDeClientes));
         formulario.reset();
         mostrarTabelaClientes();
     }
@@ -81,49 +81,4 @@ function excluirCliente(cpf){
     }
 }
 
-function cadastrarCliente(cliente){
-
-    fetch(urlBase, {
-       "method":"POST",
-       "headers": {
-          "Content-Type":"application/json",
-       },
-       "body": JSON.stringify(cliente)
-    })
-    .then((resposta)=>{
-        if(resposta.ok){
-            return resposta.json();
-        }
-    })
-    .then((dados) =>{
-        alert(`Cliente incluído com sucesso! ID:${dados.id}`);
-        listaDeClientes.push(cliente);
-        mostrarTabelaClientes();
-    })
-    .catch((erro)=>{
-        alert("Erro ao cadastrar o cliente:" + erro);
-    });
-
-}
-
-function obterDadosClientes(){
-    
-    fetch(urlBase, {
-        method:"GET"
-    })
-    .then((resposta)=>{
-        if (resposta.ok){
-            return resposta.json();
-        }
-    })
-    .then((clientes)=>{
-        listaDeClientes=clientes;
-        mostrarTabelaClientes();
-    })
-    .catch((erro)=>{
-        alert("Erro ao tentar recuperar clientes do servidor!");
-    });
-}
-
-
-obterDadosClientes();
+mostrarTabelaClientes();
