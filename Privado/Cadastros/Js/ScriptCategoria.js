@@ -122,8 +122,8 @@ function cadastrarCategoria(categoria){
         }
     })
     .then((dados) =>{
-        alert(`Produto incluído com sucesso! ID:${dados.id}`);
-        listaDeCategorias.push(produto);
+        alert(`Categoria incluído com sucesso! ID:${dados.id}`);
+        listaDeCategorias.push(categoria);
         mostrarTabelaCategorias();
     })
     .catch((erro)=>{
