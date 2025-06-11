@@ -2,7 +2,6 @@ import express from 'express';
 import session from 'express-session';
 import verificarAutenticacao from './Segurança/Autenticacao.js';
 
-
 const host = "0.0.0.0";
 const porta = 3000;
 const app = express();
@@ -20,8 +19,9 @@ app.use(session({
 
 app.use(express.urlencoded({extended:true}));
 
-app.use(express.static("./Publico")); 
 
+app.use(express.static("./Publico")); 
+app.use(verificarAutenticacao, express.static("./Privado"));
 
 
 app.post("/login",(requisicao, resposta) => {
@@ -33,7 +33,7 @@ app.post("/login",(requisicao, resposta) => {
   else{
     let conteudo = `
     <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -79,7 +79,7 @@ app.post("/login",(requisicao, resposta) => {
   }
 });
 
-app.use(verificarAutenticacao, express.static("./Privado"));
+
 
 
 app.get('/logout',(requisicao,resposta)=>{
