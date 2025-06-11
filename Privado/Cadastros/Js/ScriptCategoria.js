@@ -137,3 +137,5 @@ function cadastrarCategoria(categoria){
 }
 
 obterDadosCategorias();
+
+// Lista ajeitada
