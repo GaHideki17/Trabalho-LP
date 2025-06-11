@@ -3,6 +3,6 @@ export default function verificarAutenticacao(requisicao,resposta,next){
         next();
     }
     else{
-        resposta.redirect("/Pagina_Login/Login.html");
+        resposta.redirect("/Pagina_Login/Vitrine.html");
     }
 }
