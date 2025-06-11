@@ -21,7 +21,7 @@ app.use(express.urlencoded({extended:true}));
 
 
 app.use(express.static("./Publico")); 
-app.use(verificarAutenticacao, express.static("./Privado"));
+
 
 
 app.post("/login",(requisicao, resposta) => {
@@ -79,7 +79,7 @@ app.post("/login",(requisicao, resposta) => {
   }
 });
 
-
+app.use(verificarAutenticacao, express.static("./Privado"));
 
 
 app.get('/logout',(requisicao,resposta)=>{
